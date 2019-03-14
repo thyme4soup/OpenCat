@@ -537,6 +537,30 @@ void loop() {
       int duty = SERVOMIN + PWM_RANGE / 2 + float(middleShift(target[0])  + servoCalibs[target[0]] + motion.dutyAngles[target[0]]) * pulsePerDegree[target[0]] * rotationDirection(target[0]);
       pwm.setPWM(pin(target[0]), 0,  duty);
     }
+    else if (token == 'e') {
+      digitalWrite(TRIGGER, LOW);
+      delayMicroseconds(2);
+    
+      // Sets the trigPin on HIGH state for 10 micro seconds
+      digitalWrite(TRIGGER, HIGH);
+      digitalWrite(BUZZER, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(TRIGGER, LOW);
+      digitalWrite(BUZZER, LOW);
+    
+      // Reads the echoPin, returns the sound wave travel time in microseconds
+    
+      long duration = pulseIn(ECHO, HIGH, farTime);
+    
+      // Calculating the distance
+    
+      int distance = duration * 0.034 / 2; // 10^-6 * 34000 cm/s
+    
+      // Prints the distance on the Serial Monitor
+      Serial.print("Distance: ");
+      Serial.print(distance == 0 ? LONGEST_DISTANCE : distance);
+      Serial.println(" cm");
+    }
 
     else if (Serial.available() > 0) {
       String inBuffer = Serial.readStringUntil('\n');
