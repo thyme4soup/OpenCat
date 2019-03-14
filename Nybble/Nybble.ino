@@ -357,34 +357,6 @@ void setup() {
   pinMode(TRIGGER, OUTPUT); // Sets the trigPin as an Output
   pinMode(ECHO, INPUT); // Sets the echoPin as an Input
   digitalWrite(VCC, HIGH);
-  int t = 0;
-  int minDist, maxDist;
-  while (0) {//disabled for now. needs virtual threading to reduce lag in motion.
-    calibratedPWM(0, -10 * cos(t++*M_PI / 360));
-    calibratedPWM(1, 10 * sin(t++ * 2 * M_PI / 360));
-    digitalWrite(TRIGGER, LOW);
-    delayMicroseconds(2);
-
-    // Sets the trigPin on HIGH state for 10 micro seconds
-    digitalWrite(TRIGGER, HIGH);
-    digitalWrite(BUZZER, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIGGER, LOW);
-    digitalWrite(BUZZER, LOW);
-
-    // Reads the echoPin, returns the sound wave travel time in microseconds
-
-    long duration = pulseIn(ECHO, HIGH, farTime);
-
-    // Calculating the distance
-
-    int distance = duration * 0.034 / 2; // 10^-6 * 34000 cm/s
-
-    // Prints the distance on the Serial Monitor
-    Serial.print("Distance: ");
-    Serial.print(distance == 0 ? LONGEST_DISTANCE : distance);
-    Serial.println(" cm");
-  }
   meow();
 }
 
@@ -452,24 +424,11 @@ void loop() {
   if (newCmdIdx) {
     PTL(token);
     beep(newCmdIdx * 4);
-    // this block handles argumentless tokens
-    if (token == 'h')
-      PTLF("** Help Information **");// print the help document
-    else if (token == 'd' ) {
+    if (token == 'd' ) {
       motion.loadBySkillName("rest");
       transform( motion.dutyAngles);
       PTLF("shut down servos");
       shutServos();
-    }
-    else if (token == 's') {
-      PTLF("save calibration");
-      saveCalib(servoCalibs);
-    }
-    else if (token == 'a') {
-      PTLF("abort calibration");
-      for (byte i = 0; i < DOF; i++) {
-        servoCalibs[i] = servoCalib( i);
-      }
     }
     // this block handles array like arguments
     else if (token == 'l' ) {
